@@ -1,0 +1,59 @@
+name: Post Tweet
+
+on:
+  schedule:
+    # Weekday schedule (Mon-Fri) - 4 posts/day at peak US hours (EST)
+    # 9am EST = 14:00 UTC
+    - cron: '0 14 * * 1-5'
+    # 12pm EST = 17:00 UTC  
+    - cron: '0 17 * * 1-5'
+    # 5pm EST = 22:00 UTC
+    - cron: '0 22 * * 1-5'
+    # 8pm EST = 01:00 UTC (next day)
+    - cron: '0 1 * * 2-6'
+    
+    # Weekend schedule (Sat-Sun) - 2 posts/day
+    # 11am EST = 16:00 UTC
+    - cron: '0 16 * * 0,6'
+    # 6pm EST = 23:00 UTC
+    - cron: '0 23 * * 0,6'
+    
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  post-tweet:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Post tweet with random delay
+        env:
+          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
+          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
+        run: node scripts/post-tweet.js
+      
+      - name: Commit posted tracking
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add content/posted.json
+          git diff --staged --quiet || git commit -m "📱 Track posted tweet [$(date -u +'%Y-%m-%d %H:%M UTC')]"
+          git pull --rebase origin main || true
+          git push

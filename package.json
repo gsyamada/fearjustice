@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "update-news": "node scripts/update-news.js"
+    "update-news": "node scripts/update-news.js",
+    "post-tweet": "node scripts/post-tweet.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",

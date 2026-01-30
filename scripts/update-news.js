@@ -348,9 +348,8 @@ async function main() {
   );
   console.log('\nSaved to content/news.json');
   
-  if (ranked[0] && process.env.POST_TO_TWITTER === 'true') {
-    await postToTwitter(ranked[0]);
-  }
+  // Twitter posting is now handled by separate scheduled workflow
+  // See: .github/workflows/tweet-schedule.yml
   
   console.log('\n=== Update Complete ===');
 }
