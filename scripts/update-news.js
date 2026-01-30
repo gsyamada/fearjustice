@@ -214,28 +214,25 @@ async function summarizeArticle(article) {
     
     const prompt = `You are a hard-hitting leftist news editor writing for a Gen Z audience. Provide two summaries of this news story:
 
-1. TEASER: A 1-2 sentence hook (max 120 characters) that makes readers want to know more
+1. TEASER: A 1-2 sentence hook (max 120 characters) that grabs attention
 
-2. FULL: A 3-5 paragraph mini-article summary. Include:
-   - The most shocking or sensational facts
-   - Key quotes if available
-   - Who is being harmed and who benefits
-   - Systemic context (capitalism, inequality, power structures)
-   - Why this matters right now
-   Write with urgency and conviction. No hedging.
+2. FULL: Write a COMPLETE 5-7 paragraph mini-article (at least 300 words). This should read like a full news article, not a summary. Include:
+   - Opening paragraph with the key news and why it matters
+   - Background context and how we got here
+   - The most damning facts, statistics, and quotes
+   - Who is being harmed and who profits from this
+   - Systemic analysis (connect to capitalism, oligarchy, imperialism, or inequality)
+   - What this means going forward
+   - A punchy closing that calls readers to awareness or action
+   
+   Write with conviction. Use strong verbs. Name names. No hedging or "both sides" framing.
 
 Title: ${article.title}
-Content: ${fullContent.slice(0, 6000)}
+Content: ${fullContent.slice(0, 8000)}
 
 Format your response EXACTLY like this:
 TEASER: [your teaser here]
-FULL: [paragraph 1]
-
-[paragraph 2]
-
-[paragraph 3]
-
-[etc.]`;
+FULL: [complete mini-article with multiple paragraphs separated by blank lines]`;
 
     const result = await model.generateContent(prompt);
     const rawSummary = result.response.text();
