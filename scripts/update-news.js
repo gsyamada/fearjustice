@@ -148,12 +148,14 @@ async function summarizeArticle(article) {
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     
-    const prompt = `You are a hard-hitting leftist news editor. Summarize this news story in exactly 2 short, punchy bullet points for a Gen Z audience. Each bullet must be under 80 characters. Be direct, emphasize systemic issues. No fluff.
+    const prompt = `You are a hard-hitting leftist news editor. Summarize this news story in exactly 2 ultra-short bullet points for a Gen Z audience. STRICT LIMIT: each bullet must be under 60 characters total including the bullet point. Be punchy and direct.
 
 Title: ${article.title}
 Content: ${article.content.slice(0, 2000)}
 
-Format: exactly 2 bullet points, each on its own line starting with •. Keep each bullet under 80 characters.`;
+Format: exactly 2 bullets starting with •. MAXIMUM 60 characters per bullet. Example length:
+• This is about the right length for a bullet
+• Keep it short and impactful like this`;
 
     const result = await model.generateContent(prompt);
     const summary = result.response.text();

@@ -52,25 +52,14 @@ function timeAgo(dateStr: string) {
   return `${diffDays} days ago`
 }
 
-function truncateAtWord(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text
-  const truncated = text.slice(0, maxLength)
-  const lastSpace = truncated.lastIndexOf(' ')
-  if (lastSpace > maxLength * 0.6) {
-    return truncated.slice(0, lastSpace) + '...'
-  }
-  return truncated + '...'
-}
-
 function SummaryBlock({ summary, isHeadline = false }: { summary: string, isHeadline?: boolean }) {
   const lines = summary.split('\n').filter(line => line.trim())
   const bulletLimit = isHeadline ? 3 : 2
-  const charLimit = isHeadline ? 150 : 85
   
   return (
     <div className="article-summary">
       {lines.slice(0, bulletLimit).map((line, i) => (
-        <p key={i}>{truncateAtWord(line, charLimit)}</p>
+        <p key={i}>{line}</p>
       ))}
     </div>
   )
