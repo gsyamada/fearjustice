@@ -8,6 +8,7 @@ interface Article {
   link: string
   source: string
   summary: string
+  fullSummary?: string
   pubDate?: string
   sensationalismScore?: number
   isPaywalled?: boolean
@@ -52,16 +53,55 @@ function timeAgo(dateStr: string) {
   return `${diffDays} days ago`
 }
 
-function SummaryBlock({ summary, isHeadline = false }: { summary: string, isHeadline?: boolean }) {
-  const lines = summary.split('\n').filter(line => line.trim())
-  const bulletLimit = isHeadline ? 3 : 2
+function getDomain(url: string): string {
+  try {
+    return new URL(url).hostname.replace('www.', '')
+  } catch {
+    return 'source'
+  }
+}
+
+function ArticleCard({ article, index }: { article: Article, index: number }) {
+  const [expanded, setExpanded] = useState(false)
   
   return (
-    <div className="article-summary">
-      {lines.slice(0, bulletLimit).map((line, i) => (
-        <p key={i}>{line}</p>
-      ))}
-    </div>
+    <article className="article-card">
+      <p className="article-source">{article.source}</p>
+      <a href={article.link} target="_blank" rel="noopener noreferrer">
+        <h3 className="article-title">
+          {article.title}
+          {article.isPaywalled && <span className="paywall-badge" title="Paywalled">$</span>}
+        </h3>
+      </a>
+      
+      {!expanded ? (
+        <>
+          <p className="article-summary">{article.summary}</p>
+          <button className="expand-btn" onClick={() => setExpanded(true)}>
+            EXPAND
+          </button>
+        </>
+      ) : (
+        <div className="article-expanded">
+          <p className="article-full-summary">{article.fullSummary || article.summary}</p>
+          <a 
+            href={article.link} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="read-article-link"
+          >
+            Read article at {getDomain(article.link)}
+          </a>
+          <button className="collapse-btn" onClick={() => setExpanded(false)}>
+            COLLAPSE
+          </button>
+        </div>
+      )}
+      
+      {article.pubDate && (
+        <p className="article-time">{timeAgo(article.pubDate)}</p>
+      )}
+    </article>
   )
 }
 
@@ -122,9 +162,15 @@ export default function Home() {
               </h2>
             </a>
             <p className="headline-source">via {displayHeadline.source}</p>
-            <div className="headline-summary">
-              <SummaryBlock summary={displayHeadline.summary} isHeadline={true} />
-            </div>
+            <p className="headline-summary">{displayHeadline.fullSummary || displayHeadline.summary}</p>
+            <a 
+              href={displayHeadline.link} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="headline-read-link"
+            >
+              Read full article at {getDomain(displayHeadline.link)} →
+            </a>
           </div>
         </section>
       )}
@@ -132,19 +178,7 @@ export default function Home() {
       <section className="container">
         <div className="news-grid">
           {gridArticles.map((article, index) => (
-            <article key={index} className="article-card">
-              <p className="article-source">{article.source}</p>
-              <a href={article.link} target="_blank" rel="noopener noreferrer">
-                <h3 className="article-title">
-                  {article.title}
-                  {article.isPaywalled && <span className="paywall-badge" title="Paywalled">$</span>}
-                </h3>
-              </a>
-              <SummaryBlock summary={article.summary} />
-              {article.pubDate && (
-                <p className="article-time">{timeAgo(article.pubDate)}</p>
-              )}
-            </article>
+            <ArticleCard key={index} article={article} index={index} />
           ))}
         </div>
       </section>

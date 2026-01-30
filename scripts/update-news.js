@@ -148,28 +148,40 @@ async function summarizeArticle(article) {
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     
-    const prompt = `You are a hard-hitting leftist news editor. Summarize this news story in exactly 2 ultra-short bullet points for a Gen Z audience. STRICT LIMIT: each bullet must be under 60 characters total including the bullet point. Be punchy and direct.
+    const prompt = `You are a hard-hitting leftist news editor writing for a Gen Z audience. Provide two summaries of this news story:
+
+1. TEASER: A 1-2 sentence hook (max 120 characters) that makes readers want to know more
+2. FULL: A 3-4 sentence complete summary with key details and systemic context
 
 Title: ${article.title}
 Content: ${article.content.slice(0, 2000)}
 
-Format: exactly 2 bullets starting with •. MAXIMUM 60 characters per bullet. Example length:
-• This is about the right length for a bullet
-• Keep it short and impactful like this`;
+Format your response EXACTLY like this:
+TEASER: [your teaser here]
+FULL: [your full summary here]`;
 
     const result = await model.generateContent(prompt);
-    const summary = result.response.text();
+    const rawSummary = result.response.text();
+    
+    // Parse teaser and full summary
+    const teaserMatch = rawSummary.match(/TEASER:\s*(.+?)(?=FULL:|$)/s);
+    const fullMatch = rawSummary.match(/FULL:\s*(.+)/s);
+    
+    const teaser = teaserMatch ? teaserMatch[1].trim() : rawSummary.slice(0, 120);
+    const fullSummary = fullMatch ? fullMatch[1].trim() : rawSummary;
     
     return {
       ...article,
-      summary: summary.trim(),
+      summary: teaser,
+      fullSummary: fullSummary,
       summarizedAt: new Date().toISOString(),
     };
   } catch (err) {
     console.error(`Failed to summarize "${article.title}":`, err.message);
     return {
       ...article,
-      summary: `• ${article.content.slice(0, 200)}...`,
+      summary: article.content.slice(0, 120) + '...',
+      fullSummary: article.content.slice(0, 500),
       summarizedAt: new Date().toISOString(),
     };
   }
