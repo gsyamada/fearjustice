@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import newsData from '../content/news.json'
 
 const ARTICLES_PER_PAGE = 15
@@ -107,6 +108,14 @@ function getDomain(url: string): string {
   }
 }
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 80)
+}
+
 function ArticleCard({ article, onTrack }: { article: Article, onTrack: (link: string) => void }) {
   const [expanded, setExpanded] = useState(false)
   
@@ -122,12 +131,12 @@ function ArticleCard({ article, onTrack }: { article: Article, onTrack: (link: s
   return (
     <article className="article-card">
       <p className="article-source">{article.source}</p>
-      <a href={article.link} target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>
+      <Link href={`/article/${slugify(article.title)}`} onClick={handleLinkClick}>
         <h3 className="article-title">
           {article.title}
           {article.isPaywalled && <span className="paywall-badge" title="Paywalled">$</span>}
         </h3>
-      </a>
+      </Link>
       
       {!expanded ? (
         <>
@@ -238,12 +247,12 @@ export default function Home() {
         <section className="headline-section">
           <div className="container">
             <span className="headline-label">Breaking</span>
-            <a href={displayHeadline.link} target="_blank" rel="noopener noreferrer" onClick={() => handleTrack(displayHeadline.link)}>
+            <Link href={`/article/${slugify(displayHeadline.title)}`} onClick={() => handleTrack(displayHeadline.link)}>
               <h2 className="headline-title">
                 {displayHeadline.title}
                 {displayHeadline.isPaywalled && <span className="paywall-badge" title="Paywalled">$</span>}
               </h2>
-            </a>
+            </Link>
             <p className="headline-source">via {displayHeadline.source}</p>
             <p className="headline-summary">{displayHeadline.fullSummary || displayHeadline.summary}</p>
             <a 
