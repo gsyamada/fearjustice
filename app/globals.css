@@ -79,6 +79,61 @@ a:hover {
   margin-top: 0.5rem;
 }
 
+/* Paywall toggle */
+.paywall-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.toggle-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 2px solid;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.toggle-switch.toggle-on {
+  border-color: #00ff66;
+  background: rgba(0, 255, 102, 0.6);
+}
+
+.toggle-switch.toggle-off {
+  border-color: #555555;
+  background: rgba(85, 85, 85, 0.4);
+}
+
+.toggle-badge {
+  font-size: 1rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.toggle-on .toggle-badge {
+  color: #ffffff;
+}
+
+.toggle-off .toggle-badge {
+  color: #777777;
+}
+
+.toggle-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
 /* Main headline */
 .headline-section {
   border-bottom: 2px solid var(--border-color);

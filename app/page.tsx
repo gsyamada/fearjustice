@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from 'react'
 import newsData from '../content/news.json'
 
 interface Article {
@@ -63,6 +66,19 @@ function SummaryBlock({ summary }: { summary: string }) {
 export default function Home() {
   const data = newsData as NewsData
   const { headline, articles, lastUpdated } = data
+  const [showPaywalled, setShowPaywalled] = useState(true)
+  
+  const filteredArticles = showPaywalled 
+    ? articles 
+    : articles.filter(a => !a.isPaywalled)
+  
+  const displayHeadline = (!showPaywalled && headline?.isPaywalled) 
+    ? filteredArticles[0] 
+    : headline
+  
+  const gridArticles = displayHeadline === headline 
+    ? filteredArticles.slice(1, 16) 
+    : filteredArticles.slice(1, 16)
   
   return (
     <main>
@@ -78,22 +94,32 @@ export default function Home() {
           </h1>
           <p className="tagline">The People's News • Unfiltered</p>
           <p className="dateline">{formatDate(lastUpdated)}</p>
+          <div className="paywall-toggle">
+            <button 
+              className={`toggle-switch ${showPaywalled ? 'toggle-on' : 'toggle-off'}`}
+              onClick={() => setShowPaywalled(!showPaywalled)}
+              aria-pressed={showPaywalled}
+            >
+              <span className="toggle-badge">$</span>
+            </button>
+            <span className="toggle-label">Paywalled Articles Visible</span>
+          </div>
         </div>
       </header>
       
-      {headline && (
+      {displayHeadline && (
         <section className="headline-section">
           <div className="container">
             <span className="headline-label">Breaking</span>
-            <a href={headline.link} target="_blank" rel="noopener noreferrer">
+            <a href={displayHeadline.link} target="_blank" rel="noopener noreferrer">
               <h2 className="headline-title">
-                {headline.title}
-                {headline.isPaywalled && <span className="paywall-badge" title="Paywalled">$</span>}
+                {displayHeadline.title}
+                {displayHeadline.isPaywalled && <span className="paywall-badge" title="Paywalled">$</span>}
               </h2>
             </a>
-            <p className="headline-source">via {headline.source}</p>
+            <p className="headline-source">via {displayHeadline.source}</p>
             <div className="headline-summary">
-              <SummaryBlock summary={headline.summary} />
+              <SummaryBlock summary={displayHeadline.summary} />
             </div>
           </div>
         </section>
@@ -101,7 +127,7 @@ export default function Home() {
       
       <section className="container">
         <div className="news-grid">
-          {articles.slice(1, 16).map((article, index) => (
+          {gridArticles.map((article, index) => (
             <article key={index} className="article-card">
               <p className="article-source">{article.source}</p>
               <a href={article.link} target="_blank" rel="noopener noreferrer">
