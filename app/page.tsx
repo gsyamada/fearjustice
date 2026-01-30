@@ -1,7 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import newsData from '../content/news.json'
+
+const ARTICLES_PER_PAGE = 15
+const MAX_FRONT_PAGE_HOURS = 36
 
 interface Article {
   title: string
@@ -14,10 +17,53 @@ interface Article {
   isPaywalled?: boolean
 }
 
+interface ClickData {
+  [key: string]: {
+    clicks: number
+    lastClick: string
+    firstSeen: string
+  }
+}
+
 interface NewsData {
   lastUpdated: string
   headline: Article
   articles: Article[]
+}
+
+async function trackClick(articleLink: string) {
+  try {
+    await fetch('/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ articleLink })
+    })
+  } catch {}
+}
+
+function getArticleScore(article: Article, clicks: ClickData): number {
+  const now = new Date()
+  const pubDate = article.pubDate ? new Date(article.pubDate) : now
+  const hoursOld = (now.getTime() - pubDate.getTime()) / (1000 * 60 * 60)
+  
+  // Base score from sensationalism
+  let score = article.sensationalismScore || 0
+  
+  // Add click bonus (each click adds points)
+  const articleClicks = clicks[article.link]
+  if (articleClicks) {
+    score += articleClicks.clicks * 5
+  }
+  
+  // If older than 36 hours, heavily penalize for page 1
+  if (hoursOld > MAX_FRONT_PAGE_HOURS) {
+    score -= 1000
+  }
+  
+  // Recency bonus (decays over time)
+  score += Math.max(0, 50 - hoursOld * 2)
+  
+  return score
 }
 
 function formatDate(dateStr: string) {
@@ -61,13 +107,22 @@ function getDomain(url: string): string {
   }
 }
 
-function ArticleCard({ article, index }: { article: Article, index: number }) {
+function ArticleCard({ article, onTrack }: { article: Article, onTrack: (link: string) => void }) {
   const [expanded, setExpanded] = useState(false)
+  
+  const handleExpand = () => {
+    setExpanded(true)
+    onTrack(article.link)
+  }
+  
+  const handleLinkClick = () => {
+    onTrack(article.link)
+  }
   
   return (
     <article className="article-card">
       <p className="article-source">{article.source}</p>
-      <a href={article.link} target="_blank" rel="noopener noreferrer">
+      <a href={article.link} target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>
         <h3 className="article-title">
           {article.title}
           {article.isPaywalled && <span className="paywall-badge" title="Paywalled">$</span>}
@@ -77,7 +132,7 @@ function ArticleCard({ article, index }: { article: Article, index: number }) {
       {!expanded ? (
         <>
           <p className="article-summary">{article.summary}</p>
-          <button className="expand-btn" onClick={() => setExpanded(true)}>
+          <button className="expand-btn" onClick={handleExpand}>
             EXPAND
           </button>
         </>
@@ -109,18 +164,46 @@ export default function Home() {
   const data = newsData as NewsData
   const { headline, articles, lastUpdated } = data
   const [showPaywalled, setShowPaywalled] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [clicks, setClicks] = useState<ClickData>({})
   
+  useEffect(() => {
+    fetch('/api/track')
+      .then(res => res.json())
+      .then(data => setClicks(data))
+      .catch(() => {})
+  }, [])
+  
+  const handleTrack = (articleLink: string) => {
+    trackClick(articleLink)
+    setClicks(prev => ({
+      ...prev,
+      [articleLink]: {
+        clicks: (prev[articleLink]?.clicks || 0) + 1,
+        lastClick: new Date().toISOString(),
+        firstSeen: prev[articleLink]?.firstSeen || new Date().toISOString()
+      }
+    }))
+  }
+  
+  // Filter by paywall preference
   const filteredArticles = showPaywalled 
     ? articles 
     : articles.filter(a => !a.isPaywalled)
   
-  const displayHeadline = (!showPaywalled && headline?.isPaywalled) 
-    ? filteredArticles[0] 
-    : headline
+  // Sort by engagement score
+  const rankedArticles = [...filteredArticles].sort((a, b) => 
+    getArticleScore(b, clicks) - getArticleScore(a, clicks)
+  )
   
-  const gridArticles = displayHeadline === headline 
-    ? filteredArticles.slice(1, 16) 
-    : filteredArticles.slice(1, 16)
+  // Pagination
+  const totalPages = Math.ceil(rankedArticles.length / ARTICLES_PER_PAGE)
+  const startIdx = (currentPage - 1) * ARTICLES_PER_PAGE
+  const pageArticles = rankedArticles.slice(startIdx, startIdx + ARTICLES_PER_PAGE)
+  
+  // Headline is top article on page 1
+  const displayHeadline = currentPage === 1 ? pageArticles[0] : null
+  const gridArticles = currentPage === 1 ? pageArticles.slice(1) : pageArticles
   
   return (
     <main>
@@ -155,7 +238,7 @@ export default function Home() {
         <section className="headline-section">
           <div className="container">
             <span className="headline-label">Breaking</span>
-            <a href={displayHeadline.link} target="_blank" rel="noopener noreferrer">
+            <a href={displayHeadline.link} target="_blank" rel="noopener noreferrer" onClick={() => handleTrack(displayHeadline.link)}>
               <h2 className="headline-title">
                 {displayHeadline.title}
                 {displayHeadline.isPaywalled && <span className="paywall-badge" title="Paywalled">$</span>}
@@ -168,6 +251,7 @@ export default function Home() {
               target="_blank" 
               rel="noopener noreferrer"
               className="headline-read-link"
+              onClick={() => handleTrack(displayHeadline.link)}
             >
               Read full article at {getDomain(displayHeadline.link)} →
             </a>
@@ -178,9 +262,31 @@ export default function Home() {
       <section className="container">
         <div className="news-grid">
           {gridArticles.map((article, index) => (
-            <ArticleCard key={index} article={article} index={index} />
+            <ArticleCard key={article.link} article={article} onTrack={handleTrack} />
           ))}
         </div>
+        
+        {totalPages > 1 && (
+          <nav className="pagination">
+            <button 
+              className="page-btn"
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              ← PREV
+            </button>
+            <span className="page-info">
+              PAGE {currentPage} OF {totalPages}
+            </span>
+            <button 
+              className="page-btn"
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              NEXT →
+            </button>
+          </nav>
+        )}
       </section>
       
       <section className="support-section">
