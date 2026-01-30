@@ -1,0 +1,11 @@
+{
+  "lastUpdated": "2024-01-01T00:00:00.000Z",
+  "headline": {
+    "title": "Welcome to Fear Justice",
+    "link": "https://fearjustice.com",
+    "source": "Fear Justice",
+    "summary": "• Your automated leftist news dashboard is ready\n• News will populate on first GitHub Action run\n• Configure your API keys and deploy to Vercel",
+    "sensationalismScore": 100
+  },
+  "articles": []
+}
