@@ -368,8 +368,6 @@ a:hover {
   display: inline-block;
   margin-left: 0.5rem;
   font-size: 1em;
-  color: #00ff66;
-  filter: drop-shadow(0 0 6px rgba(0, 255, 102, 0.8));
+  color: var(--text-primary);
   vertical-align: middle;
-  font-weight: bold;
 }
