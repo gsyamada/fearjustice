@@ -362,3 +362,13 @@ a:hover {
 .newsletter-button:hover {
   background: var(--accent-yellow);
 }
+
+/* Paywall badge */
+.paywall-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.875em;
+  color: #22c55e;
+  filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.5));
+  vertical-align: middle;
+}

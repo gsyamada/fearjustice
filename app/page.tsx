@@ -7,6 +7,7 @@ interface Article {
   summary: string
   pubDate?: string
   sensationalismScore?: number
+  isPaywalled?: boolean
 }
 
 interface NewsData {
@@ -85,7 +86,10 @@ export default function Home() {
           <div className="container">
             <span className="headline-label">Breaking</span>
             <a href={headline.link} target="_blank" rel="noopener noreferrer">
-              <h2 className="headline-title">{headline.title}</h2>
+              <h2 className="headline-title">
+                {headline.title}
+                {headline.isPaywalled && <span className="paywall-badge" title="Paywalled">💲</span>}
+              </h2>
             </a>
             <p className="headline-source">via {headline.source}</p>
             <div className="headline-summary">
@@ -101,7 +105,10 @@ export default function Home() {
             <article key={index} className="article-card">
               <p className="article-source">{article.source}</p>
               <a href={article.link} target="_blank" rel="noopener noreferrer">
-                <h3 className="article-title">{article.title}</h3>
+                <h3 className="article-title">
+                  {article.title}
+                  {article.isPaywalled && <span className="paywall-badge" title="Paywalled">💲</span>}
+                </h3>
               </a>
               <SummaryBlock summary={article.summary} />
               {article.pubDate && (
