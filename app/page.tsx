@@ -305,7 +305,7 @@ export default function Home() {
               <h3 className="support-title">SUPPORT THE CAUSE</h3>
               <p className="support-text">Independent news needs independent funding.</p>
               <a 
-                href="https://ko-fi.com/fearjustice" 
+                href="https://ko-fi.com/lennonist" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="kofi-button"
@@ -345,7 +345,7 @@ export default function Home() {
             <a href="https://twitter.com/fearjustice" target="_blank" rel="noopener noreferrer">
               @fearjustice
             </a>
-            <a href="https://ko-fi.com/fearjustice" target="_blank" rel="noopener noreferrer">
+            <a href="https://ko-fi.com/lennonist" target="_blank" rel="noopener noreferrer">
               Support
             </a>
           </div>
