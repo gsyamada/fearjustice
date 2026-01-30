@@ -121,6 +121,60 @@ async function checkArticlePaywall(url) {
   }
 }
 
+async function fetchArticleContent(url) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    
+    const response = await fetch(url, {
+      headers: { 
+        'User-Agent': 'Mozilla/5.0 (compatible; FearJustice/1.0)',
+        'Accept': 'text/html'
+      },
+      signal: controller.signal,
+      redirect: 'follow'
+    });
+    
+    clearTimeout(timeout);
+    
+    if (!response.ok) return null;
+    
+    const html = await response.text();
+    
+    // Extract article text - look for common article containers
+    const articleMatch = html.match(/<article[^>]*>([\s\S]*?)<\/article>/i) ||
+                         html.match(/<div[^>]*class="[^"]*article[^"]*"[^>]*>([\s\S]*?)<\/div>/i) ||
+                         html.match(/<div[^>]*class="[^"]*post-content[^"]*"[^>]*>([\s\S]*?)<\/div>/i) ||
+                         html.match(/<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+    
+    if (articleMatch) {
+      // Strip HTML tags and clean up
+      let text = articleMatch[1]
+        .replace(/<script[\s\S]*?<\/script>/gi, '')
+        .replace(/<style[\s\S]*?<\/style>/gi, '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return text.slice(0, 6000);
+    }
+    
+    // Fallback: get all paragraph text
+    const paragraphs = html.match(/<p[^>]*>([^<]+)<\/p>/gi);
+    if (paragraphs) {
+      const text = paragraphs
+        .map(p => p.replace(/<[^>]+>/g, ''))
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return text.slice(0, 6000);
+    }
+    
+    return null;
+  } catch (err) {
+    return null;
+  }
+}
+
 async function fetchAllFeeds() {
   const allArticles = [];
   
@@ -148,6 +202,16 @@ async function summarizeArticle(article) {
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     
+    // Try to fetch full article content if RSS snippet is short
+    let fullContent = article.content;
+    if (article.content.length < 500) {
+      console.log(`  Fetching full content for: ${article.title.slice(0, 40)}...`);
+      const fetched = await fetchArticleContent(article.link);
+      if (fetched && fetched.length > article.content.length) {
+        fullContent = fetched;
+      }
+    }
+    
     const prompt = `You are a hard-hitting leftist news editor writing for a Gen Z audience. Provide two summaries of this news story:
 
 1. TEASER: A 1-2 sentence hook (max 120 characters) that makes readers want to know more
@@ -161,7 +225,7 @@ async function summarizeArticle(article) {
    Write with urgency and conviction. No hedging.
 
 Title: ${article.title}
-Content: ${article.content.slice(0, 4000)}
+Content: ${fullContent.slice(0, 6000)}
 
 Format your response EXACTLY like this:
 TEASER: [your teaser here]
