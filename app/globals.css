@@ -647,3 +647,65 @@ a:hover {
 .article-footer a {
   color: var(--accent-red);
 }
+
+/* Article bullets */
+.article-bullets {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+}
+
+.article-bullets li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.article-bullets li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--accent-red);
+  font-weight: bold;
+}
+
+/* Fear and Justice sections */
+.article-section {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.fear-section {
+  border-left: 4px solid var(--accent-red);
+}
+
+.fear-section .section-title {
+  color: var(--accent-red);
+}
+
+.justice-section {
+  border-left: 4px solid var(--accent-yellow);
+}
+
+.justice-section .section-title {
+  color: var(--accent-yellow);
+}
+
+.article-section p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}

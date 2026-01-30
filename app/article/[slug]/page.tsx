@@ -11,6 +11,9 @@ interface Article {
   source: string
   summary: string
   fullSummary?: string
+  bullets?: string[]
+  theFear?: string
+  theJustice?: string
   pubDate?: string
   isPaywalled?: boolean
 }
@@ -75,11 +78,33 @@ export default function ArticlePage() {
         </header>
         
         <article className="article-content">
-          <div className="article-body">
-            {(article.fullSummary || article.summary || '').split('\n\n').map((para: string, i: number) => (
-              <p key={i}>{para}</p>
-            ))}
-          </div>
+          {article.bullets && article.bullets.length > 0 ? (
+            <ul className="article-bullets">
+              {article.bullets.map((bullet: string, i: number) => (
+                <li key={i}>{bullet}</li>
+              ))}
+            </ul>
+          ) : (
+            <div className="article-body">
+              {(article.fullSummary || article.summary || '').split('\n\n').map((para: string, i: number) => (
+                <p key={i}>{para}</p>
+              ))}
+            </div>
+          )}
+          
+          {article.theFear && (
+            <div className="article-section fear-section">
+              <h2 className="section-title">THE FEAR</h2>
+              <p>{article.theFear}</p>
+            </div>
+          )}
+          
+          {article.theJustice && (
+            <div className="article-section justice-section">
+              <h2 className="section-title">THE JUSTICE</h2>
+              <p>{article.theJustice}</p>
+            </div>
+          )}
           
           <div className="article-cta">
             <a 

@@ -212,42 +212,63 @@ async function summarizeArticle(article) {
       }
     }
     
-    const prompt = `You are a hard-hitting leftist news editor writing for a Gen Z audience. Provide two summaries of this news story:
+    const prompt = `You are a hard-hitting leftist news editor writing for a Gen Z audience. Analyze this news story and provide:
 
 1. TEASER: A 1-2 sentence hook (max 120 characters) that grabs attention
 
-2. FULL: Write a COMPLETE 5-7 paragraph mini-article (at least 300 words). This should read like a full news article, not a summary. Include:
-   - Opening paragraph with the key news and why it matters
-   - Background context and how we got here
-   - The most damning facts, statistics, and quotes
-   - Who is being harmed and who profits from this
-   - Systemic analysis (connect to capitalism, oligarchy, imperialism, or inequality)
-   - What this means going forward
-   - A punchy closing that calls readers to awareness or action
-   
-   Write with conviction. Use strong verbs. Name names. No hedging or "both sides" framing.
+2. BULLETS: 5-7 bullet points summarizing the key facts of the article. Each bullet should be 1-2 sentences. Focus on the most important details, names, numbers, and developments.
+
+3. THE_FEAR: In 2-3 sentences, summarize what in this article leftists or liberal individuals should be afraid of. What threat does this represent to progressive values, marginalized communities, democracy, or justice?
+
+4. THE_JUSTICE: In 2-3 sentences, analyze the presence or (more likely) lack of justice described in this article from a leftist perspective. How does this policy, action, or event support or undermine economic, legislative, racial, or social justice? Be specific about who benefits and who is harmed.
+
+Write with conviction. Use strong verbs. Name names. No hedging or "both sides" framing.
 
 Title: ${article.title}
 Content: ${fullContent.slice(0, 8000)}
 
 Format your response EXACTLY like this:
 TEASER: [your teaser here]
-FULL: [complete mini-article with multiple paragraphs separated by blank lines]`;
+BULLETS:
+• [bullet 1]
+• [bullet 2]
+• [bullet 3]
+• [bullet 4]
+• [bullet 5]
+• [bullet 6 if needed]
+• [bullet 7 if needed]
+THE_FEAR: [2-3 sentences on what leftists should fear]
+THE_JUSTICE: [2-3 sentences on justice analysis]`;
 
     const result = await model.generateContent(prompt);
     const rawSummary = result.response.text();
     
-    // Parse teaser and full summary
-    const teaserMatch = rawSummary.match(/TEASER:\s*(.+?)(?=FULL:|$)/s);
-    const fullMatch = rawSummary.match(/FULL:\s*(.+)/s);
+    // Parse all sections
+    const teaserMatch = rawSummary.match(/TEASER:\s*(.+?)(?=BULLETS:|$)/s);
+    const bulletsMatch = rawSummary.match(/BULLETS:\s*([\s\S]+?)(?=THE_FEAR:|$)/);
+    const fearMatch = rawSummary.match(/THE_FEAR:\s*(.+?)(?=THE_JUSTICE:|$)/s);
+    const justiceMatch = rawSummary.match(/THE_JUSTICE:\s*(.+)/s);
     
     const teaser = teaserMatch ? teaserMatch[1].trim() : rawSummary.slice(0, 120);
-    const fullSummary = fullMatch ? fullMatch[1].trim() : rawSummary;
+    
+    // Parse bullets into array
+    let bullets = [];
+    if (bulletsMatch) {
+      bullets = bulletsMatch[1]
+        .split(/\n/)
+        .map(line => line.replace(/^[•\-\*]\s*/, '').trim())
+        .filter(line => line.length > 0);
+    }
+    
+    const theFear = fearMatch ? fearMatch[1].trim() : '';
+    const theJustice = justiceMatch ? justiceMatch[1].trim() : '';
     
     return {
       ...article,
       summary: teaser,
-      fullSummary: fullSummary,
+      bullets: bullets,
+      theFear: theFear,
+      theJustice: theJustice,
       summarizedAt: new Date().toISOString(),
     };
   } catch (err) {
@@ -255,7 +276,9 @@ FULL: [complete mini-article with multiple paragraphs separated by blank lines]`
     return {
       ...article,
       summary: article.content.slice(0, 120) + '...',
-      fullSummary: article.content.slice(0, 500),
+      bullets: [],
+      theFear: '',
+      theJustice: '',
       summarizedAt: new Date().toISOString(),
     };
   }
