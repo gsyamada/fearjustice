@@ -314,8 +314,9 @@ async function main() {
   }
   
   console.log('Summarizing articles and checking paywalls...\n');
+  console.log('(Rate limited: 5 second delay between API calls)\n');
   const summarized = [];
-  for (const article of articles.slice(0, 20)) {
+  for (const article of articles.slice(0, 12)) {
     const result = await summarizeArticle(article);
     
     // Check paywall status
@@ -324,7 +325,8 @@ async function main() {
     result.isPaywalled = paywallStatus.isPaywalled;
     
     summarized.push(result);
-    await new Promise(r => setTimeout(r, 800));
+    // 5 second delay to respect Gemini rate limits (free tier: ~15 requests/min)
+    await new Promise(r => setTimeout(r, 5000));
   }
   
   const ranked = rankBySensationalism(summarized);
