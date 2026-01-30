@@ -75,7 +75,7 @@ export default function Home() {
           <h1 className="masthead">
             <span className="fear">FEAR</span> JUSTICE
           </h1>
-          <p className="tagline">The People's News • Automated • Unfiltered</p>
+          <p className="tagline">The People's News • Unfiltered</p>
           <p className="dateline">{formatDate(lastUpdated)}</p>
         </div>
       </header>
@@ -112,17 +112,55 @@ export default function Home() {
         </div>
       </section>
       
+      <section className="support-section">
+        <div className="container">
+          <div className="support-grid">
+            <div className="support-card">
+              <h3 className="support-title">SUPPORT THE CAUSE</h3>
+              <p className="support-text">Independent news needs independent funding.</p>
+              <a 
+                href="https://ko-fi.com/fearjustice" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="kofi-button"
+              >
+                ☕ Buy us a coffee
+              </a>
+            </div>
+            <div className="support-card">
+              <h3 className="support-title">STAY INFORMED</h3>
+              <p className="support-text">Get the headlines in your inbox. No spam.</p>
+              <form 
+                action="https://buttondown.com/api/emails/embed-subscribe/fearjustice"
+                method="post"
+                target="_blank"
+                className="newsletter-form"
+              >
+                <input 
+                  type="email" 
+                  name="email" 
+                  placeholder="your@email.com"
+                  required
+                  className="newsletter-input"
+                />
+                <button type="submit" className="newsletter-button">SUBSCRIBE</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <footer className="footer">
         <div className="container">
           <p className="footer-text">
-            Fear Justice © {new Date().getFullYear()} • Powered by AI • For the People
+            Fear Justice © {new Date().getFullYear()} • For the People
           </p>
           <div className="footer-links">
             <a href="https://twitter.com/fearjustice" target="_blank" rel="noopener noreferrer">
               @fearjustice
             </a>
-            <a href="https://github.com/grantyamada/fearjustice" target="_blank" rel="noopener noreferrer">
-              Source
+            <a href="https://ko-fi.com/fearjustice" target="_blank" rel="noopener noreferrer">
+              Support
             </a>
           </div>
         </div>
