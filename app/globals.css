@@ -367,8 +367,9 @@ a:hover {
 .paywall-badge {
   display: inline-block;
   margin-left: 0.5rem;
-  font-size: 0.875em;
-  color: #22c55e;
-  filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.5));
+  font-size: 1em;
+  color: #00ff66;
+  filter: drop-shadow(0 0 6px rgba(0, 255, 102, 0.8));
   vertical-align: middle;
+  font-weight: bold;
 }
