@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 80)
+}
+
 export async function GET() {
   const newsPath = path.join(process.cwd(), 'content', 'news.json')
   
@@ -22,12 +30,14 @@ export async function GET() {
       : new Date().toUTCString()
     
     const description = article.fullSummary || article.summary || article.content || ''
+    const slug = slugify(article.title)
+    const fearJusticeUrl = `https://fearjustice.com/article/${slug}`
     
     return `
     <item>
       <title><![CDATA[${article.title}]]></title>
-      <link>${article.link}</link>
-      <guid isPermaLink="false">${article.link}</guid>
+      <link>${fearJusticeUrl}</link>
+      <guid isPermaLink="true">${fearJusticeUrl}</guid>
       <pubDate>${pubDate}</pubDate>
       <source url="https://fearjustice.com">${article.source}</source>
       <description><![CDATA[${description}]]></description>
