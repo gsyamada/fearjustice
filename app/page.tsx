@@ -96,13 +96,15 @@ export default function Home() {
           <p className="dateline">{formatDate(lastUpdated)}</p>
           <div className="paywall-toggle">
             <button 
-              className={`toggle-switch ${showPaywalled ? 'toggle-on' : 'toggle-off'}`}
+              className={`toggle-slider ${showPaywalled ? 'toggle-on' : 'toggle-off'}`}
               onClick={() => setShowPaywalled(!showPaywalled)}
               aria-pressed={showPaywalled}
             >
-              <span className="toggle-badge">$</span>
+              <span className="toggle-knob">$</span>
             </button>
-            <span className="toggle-label">Paywalled Articles Visible</span>
+            <span className={`toggle-label ${showPaywalled ? 'label-on' : ''}`}>
+              Paywalled Articles Visible
+            </span>
           </div>
         </div>
       </header>

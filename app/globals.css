@@ -90,48 +90,62 @@ a:hover {
   border-top: 1px solid var(--border-color);
 }
 
-.toggle-switch {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  border: 2px solid;
+.toggle-slider {
+  position: relative;
+  width: 3.5rem;
+  height: 1.75rem;
+  border-radius: 1rem;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
-  background: transparent;
+  transition: background 0.3s ease;
+  padding: 0;
 }
 
-.toggle-switch.toggle-on {
-  border-color: #00ff66;
+.toggle-slider.toggle-on {
   background: rgba(0, 255, 102, 0.6);
 }
 
-.toggle-switch.toggle-off {
-  border-color: #555555;
-  background: rgba(85, 85, 85, 0.4);
+.toggle-slider.toggle-off {
+  background: rgba(85, 85, 85, 0.5);
 }
 
-.toggle-badge {
-  font-size: 1rem;
+.toggle-knob {
+  position: absolute;
+  top: 2px;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
   font-weight: bold;
-  line-height: 1;
+  transition: all 0.3s ease;
 }
 
-.toggle-on .toggle-badge {
-  color: #ffffff;
+.toggle-on .toggle-knob {
+  left: calc(100% - 1.55rem);
+  background: #00ff66;
+  color: #000000;
+  box-shadow: 0 0 8px rgba(0, 255, 102, 0.8);
 }
 
-.toggle-off .toggle-badge {
-  color: #777777;
+.toggle-off .toggle-knob {
+  left: 2px;
+  background: #555555;
+  color: #333333;
 }
 
 .toggle-label {
   font-size: 0.75rem;
-  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 1px;
+  transition: color 0.3s ease;
+  color: var(--text-secondary);
+}
+
+.toggle-label.label-on {
+  color: #00ff66;
 }
 
 /* Main headline */
