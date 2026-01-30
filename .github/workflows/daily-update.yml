@@ -41,6 +41,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add content/news.json
+          git add content/news.json content/clicks.json
           git diff --staged --quiet || git commit -m "🗞️ Auto-update news feed [$(date -u +'%Y-%m-%d %H:%M UTC')]"
+          git pull --rebase origin main || true
           git push

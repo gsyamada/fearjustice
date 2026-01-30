@@ -200,7 +200,7 @@ async function fetchAllFeeds() {
 
 async function summarizeArticle(article) {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     
     // Try to fetch full article content if RSS snippet is short
     let fullContent = article.content;
