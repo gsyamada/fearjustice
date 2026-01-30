@@ -88,7 +88,7 @@ export default function Home() {
             <a href={headline.link} target="_blank" rel="noopener noreferrer">
               <h2 className="headline-title">
                 {headline.title}
-                {headline.isPaywalled && <span className="paywall-badge" title="Paywalled">💲</span>}
+                {headline.isPaywalled && <span className="paywall-badge" title="Paywalled">$</span>}
               </h2>
             </a>
             <p className="headline-source">via {headline.source}</p>
@@ -107,7 +107,7 @@ export default function Home() {
               <a href={article.link} target="_blank" rel="noopener noreferrer">
                 <h3 className="article-title">
                   {article.title}
-                  {article.isPaywalled && <span className="paywall-badge" title="Paywalled">💲</span>}
+                  {article.isPaywalled && <span className="paywall-badge" title="Paywalled">$</span>}
                 </h3>
               </a>
               <SummaryBlock summary={article.summary} />

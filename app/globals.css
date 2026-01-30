@@ -365,9 +365,16 @@ a:hover {
 
 /* Paywall badge */
 .paywall-badge {
-  display: inline-block;
-  margin-left: 0.5rem;
-  font-size: 1em;
-  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.4rem;
+  width: 1.1em;
+  height: 1.1em;
+  font-size: 0.85em;
+  color: #ffffff;
+  background: rgba(0, 255, 102, 0.6);
+  border-radius: 50%;
   vertical-align: middle;
+  line-height: 1;
 }
