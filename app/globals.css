@@ -270,44 +270,12 @@ a:hover {
   overflow: hidden;
 }
 
-.article-expanded {
-  margin-top: 0.5rem;
-}
-
-.article-full-summary {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: 1rem;
-}
-
-.expand-btn,
-.collapse-btn {
-  background: none;
-  border: none;
-  color: var(--accent-red);
-  font-family: inherit;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  cursor: pointer;
-  padding: 0.5rem 0;
-  text-transform: uppercase;
-}
-
-.expand-btn:hover,
-.collapse-btn:hover {
-  color: var(--text-primary);
-}
-
-.read-article-link {
+.article-summary-link {
+  text-decoration: none;
   display: block;
-  font-size: 0.75rem;
-  color: var(--accent-yellow);
-  margin-bottom: 0.5rem;
 }
 
-.read-article-link:hover {
+.article-summary-link:hover .article-summary {
   color: var(--text-primary);
 }
 

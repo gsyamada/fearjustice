@@ -117,13 +117,6 @@ function slugify(text: string): string {
 }
 
 function ArticleCard({ article, onTrack }: { article: Article, onTrack: (link: string) => void }) {
-  const [expanded, setExpanded] = useState(false)
-  
-  const handleExpand = () => {
-    setExpanded(true)
-    onTrack(article.link)
-  }
-  
   const handleLinkClick = () => {
     onTrack(article.link)
   }
@@ -138,29 +131,9 @@ function ArticleCard({ article, onTrack }: { article: Article, onTrack: (link: s
         </h3>
       </Link>
       
-      {!expanded ? (
-        <>
-          <p className="article-summary">{article.summary}</p>
-          <button className="expand-btn" onClick={handleExpand}>
-            EXPAND
-          </button>
-        </>
-      ) : (
-        <div className="article-expanded">
-          <p className="article-full-summary">{article.fullSummary || article.summary}</p>
-          <a 
-            href={article.link} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="read-article-link"
-          >
-            Read article at {getDomain(article.link)}
-          </a>
-          <button className="collapse-btn" onClick={() => setExpanded(false)}>
-            COLLAPSE
-          </button>
-        </div>
-      )}
+      <Link href={`/article/${slugify(article.title)}`} onClick={handleLinkClick} className="article-summary-link">
+        <p className="article-summary">{article.summary}</p>
+      </Link>
       
       {article.pubDate && (
         <p className="article-time">{timeAgo(article.pubDate)}</p>
