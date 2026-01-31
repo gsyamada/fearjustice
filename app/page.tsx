@@ -124,12 +124,10 @@ function ArticleCard({ article, onTrack }: { article: Article, onTrack: (link: s
   return (
     <article className="article-card">
       <p className="article-source">{article.source}</p>
-      <Link href={`/article/${slugify(article.title)}`} onClick={handleLinkClick}>
-        <h3 className="article-title">
-          {article.title}
-          {article.isPaywalled && <span className="paywall-badge" title="Paywalled">$</span>}
-        </h3>
-      </Link>
+      <h3 className="article-title">
+        {article.title}
+        {article.isPaywalled && <span className="paywall-badge" title="Paywalled">$</span>}
+      </h3>
       
       <Link href={`/article/${slugify(article.title)}`} onClick={handleLinkClick} className="article-summary-link">
         <p className="article-summary">{article.summary}</p>
