@@ -218,7 +218,7 @@ export default function Home() {
     <main>
       <div className="ticker">
         <span className="ticker-dot" />
-        LAST UPDATED: {formatTime(lastUpdated)} — AUTO-REFRESHES EVERY 6 HOURS
+         LAST UPDATED: {formatTime(lastUpdated)}
       </div>
       
       <header className="header">
