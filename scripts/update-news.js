@@ -263,9 +263,13 @@ THE_JUSTICE: [2-3 sentences on justice analysis]`;
     const theFear = fearMatch ? fearMatch[1].trim() : '';
     const theJustice = justiceMatch ? justiceMatch[1].trim() : '';
     
+    // Create fullSummary from bullets for article pages
+    const fullSummary = bullets.length > 0 ? bullets.join('\n\n') : teaser;
+    
     return {
       ...article,
       summary: teaser,
+      fullSummary: fullSummary,
       bullets: bullets,
       theFear: theFear,
       theJustice: theJustice,
@@ -276,6 +280,7 @@ THE_JUSTICE: [2-3 sentences on justice analysis]`;
     return {
       ...article,
       summary: article.content.slice(0, 120) + '...',
+      fullSummary: article.content,
       bullets: [],
       theFear: '',
       theJustice: '',
